@@ -1,6 +1,6 @@
-const fs = require('fs');
+import fs from 'fs';
 
-const getEmployees = (req, res) => {
+export const getEmployees = (req, res) => {
     const dataFromJson = fs.readFileSync('./employees.json');
     const jsonData = JSON.parse(dataFromJson);
 
@@ -9,9 +9,7 @@ const getEmployees = (req, res) => {
     res.send(jsonData);
 }
 
-const createEmployee = (req, res) => {   
-
-    var fs = require('fs');
+export const createEmployee = (req, res) => {   
     const dataFromJson = fs.readFileSync('./employees.json');
     const jsonData = JSON.parse(dataFromJson);
 
@@ -20,7 +18,7 @@ const createEmployee = (req, res) => {
         firstName: req.body.firstName,
         lastName:req.body.lastName,
         email:req.body.email,
-        phoneNumber:req.body.email,
+        PhoneNumber:req.body.phoneNumber,
     }
 
     jsonData.push({...newEmployee});
@@ -30,8 +28,7 @@ const createEmployee = (req, res) => {
     res.send(`Employees ${newEmployee.firstName} ${newEmployee.lastName} added to the database.`);
 };
 
-const getEmployee = (req, res) => {
-    var fs = require('fs');
+export const getEmployee = (req, res) => {
     const dataFromJson = fs.readFileSync('./employees.json');
     const jsonData = JSON.parse(dataFromJson);
     const employee = jsonData.find(emp => emp.id === parseInt(req.params.id));
@@ -43,17 +40,15 @@ const getEmployee = (req, res) => {
     res.send(employee)
 };
 
-const deleteEmployee = (req, res) => { 
-
-    var fs = require('fs');
+export const deleteEmployee = (req, res) => { 
     const dataFromJson = fs.readFileSync('./employees.json');
     const jsonData = JSON.parse(dataFromJson);
 
-    const employee = jsonData.find(emp => emp.id === parseInt(req.body.id));
+    const employee = jsonData.find(emp => emp.id === parseInt(req.params.id));
     if (!employee) {
-        return res.status(400).json({ "message": `Employee ID ${req.body.id} not found` });
+        return res.status(400).json({ "message": `Employee ID ${req.params.id} not found` });
     }
-    const filteredArray = jsonData.filter(emp => emp.id !== parseInt(req.body.id));
+    const filteredArray = jsonData.filter(emp => emp.id !== parseInt(req.params.id));
     fs.writeFileSync('./employees.json', JSON.stringify(filteredArray));
 
 
@@ -61,34 +56,24 @@ const deleteEmployee = (req, res) => {
     
 };
 
-const updateEmployee =  (req,res) => {
-    var fs = require('fs');
+export const updateEmployee =  (req,res) => {
     const dataFromJson = fs.readFileSync('./employees.json');
     const jsonData = JSON.parse(dataFromJson);
-    const employee = jsonData.find(emp => emp.id === parseInt(req.body.id));
+    const employee = jsonData.find(emp => emp.id === parseInt(req.params.id));
 
     if (!employee) {
-        return res.status(400).json({ "message": `Employee ID ${req.body.id} not found` });
+        return res.status(400).json({ "message": `Employee ID ${req.params.id} not found` });
     }
     
     employee.firstName = req.body.firstName;
     employee.lastName = req.body.lastName;
     employee.email = req.body.email;
-    employee.PhoneNumber = req.body.PhoneNumber;
+    employee.PhoneNumber = req.body.phoneNumber;
 
-    const filteredArray = jsonData.filter(emp => emp.id !== parseInt(req.body.id));
+    const filteredArray = jsonData.filter(emp => emp.id !== parseInt(req.params.id));
     const unsortedArray = [...filteredArray, employee];
     unsortedArray.sort((a, b) => a.id > b.id ? 1 : a.id < b.id ? -1 : 0);
     fs.writeFileSync('./employees.json', JSON.stringify(unsortedArray));
 
     res.send(`data has been updated`);
 };
-
-
-module.exports = {
-    getEmployees,
-    createEmployee,
-    updateEmployee,
-    deleteEmployee,
-    getEmployee
-}
